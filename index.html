@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Routinely coroutining</title>
+
+		<meta name="description" content="About coroutines and concurrent programming">
+		<meta name="author" content="Jyri-Matti 'Jüppe' Lähteenmäki">
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/league.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+
+		<style>
+			.reveal .footer {
+				color: gray;
+				position: absolute;
+				top: 1em;
+				right: 1em;
+				font-size: 0.4em;
+			}
+			.reveal small {
+				font-size: 0.3em;
+			}
+			i { font-style: italic; }
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h2>Routinely coroutining</h2>
+					<p><a href="https://twitter.com/jyrimatti">@jyrimatti</a></p>
+				</section>
+				
+				<section>
+					<h3>Functions == awesome!</h3>
+					<ul>
+						<li>Functional programming</li>
+						<li>FaaS</li>
+						<li>Lambdas</li>
+						<li>Purity</li>
+						<li>...</li>
+					</ul>
+
+					<aside class="notes">...but if this talk was about functions, you would have passed me control when you arrived and you'd have to sit still for the whole talk until I'm done and pass you back control. But since this talk is about coroutines, I can suspend it and you can go and grab a beer, come back when you are done, and let me continue the talk where I was!
+					</aside>
+				</section>
+
+				<section>
+					<h3>co-routine</h3>
+					<pre>(ˈkəʊruːˌtiːn)
+n
+	(Computer Science) computing a section of a computer
+	program similar to but differing from a subroutine
+	in that it can be left and re-entered at any point
+					</pre>
+					<p style="text-align: right"><small><cite>Coroutine. (n.d.) Collins English Dictionary – Complete and Unabridged, 12th Edition 2014. (1991, 1994, 1998, 2000, 2003, 2006, 2007, 2009, 2011, 2014).
+					<br/>Retrieved October 11 2021 from <a href="https://www.thefreedictionary.com/Coroutine">https://www.thefreedictionary.com/Coroutine</a>
+</cite></small></p> 
+				</section>
+
+				<section>
+					<h3>co-routine</h3>
+					<pre>
+Coroutines are computer program components that generalize
+subroutines for non-preemptive [== Cooperative] multitasking,
+by allowing execution to be suspended and resumed. Coroutines
+are well-suited for implementing familiar program components
+such as cooperative tasks, exceptions, event loops,
+iterators, infinite lists and pipes.
+					</pre>
+					<p style="text-align: right"><small><cite>Wikipedia contributors. (2021, October 11). Coroutine. In Wikipedia, The Free Encyclopedia.
+					<br/>Retrieved 15:32, October 11, 2021, from <a href="https://en.wikipedia.org/w/index.php?title=Coroutine&oldid=1049389057">https://en.wikipedia.org/w/index.php?title=Coroutine&oldid=1049389057</a></cite></small></p>
+				</section>
+
+				<section>
+					<h3>Some history</h3>
+					<p>Name <i>coroutine</i> was coined in<br/>around 1958-1963 by Melvin E. Conway:</p>
+					<pre>
+Under these conditions each module may be made into a coroutine;
+that is, it may be coded as an autonomous program which
+communicates with adjacent modules as if they were input or
+output subroutines. Thus, coroutines are subroutines all at the
+same level, each acting as if it were the master program when
+in fact there is no master program.
+</pre><p style="text-align: right"><small><cite><a href="http://melconway.com/Home/pdf/compiler.pdf">http://melconway.com/Home/pdf/compiler.pdf</a></cite></small></p>
+				</section>
+
+				<section>
+					<h3>Some history</h3>
+					<pre>
+During the 1970s, coroutines were actively researched and
+experimented with, but support for them disappeared from
+later mainstream general-purpose languages for a long time.
+Rejoice now, because the Dark Ages of the coroutines
+are coming to an end.
+</pre><p style="text-align: right"><small><cite><a href="https://themonadreader.files.wordpress.com/2011/10/issue19.pdf">https://themonadreader.files.wordpress.com/2011/10/issue19.pdf</a></cite></small></p>
+				</section>
+
+				<section>
+					<p>So...</p>
+					<p>...what?</p>
+				</section>
+
+				<section>
+					<h3>Pre-emptive?</h3>
+					<ul>
+						<li>traditional threads</li>
+						<li>OS can switch executing threads in any point</li>
+						<li>multiple threads can mutate a datastructure "at the same time"
+						    <ul>
+								<li>need to ensure that only 1 thread can execute a specific block at the same time</li>
+								<li>need to ensure other threads see changes made (that is: remove some optimizations)</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Cooperative?</h3>
+					<ul>
+						<li>green threads or fibers</li>
+						<li>thread can switch only in specified points
+							<ul>
+								<li>need to ensure threads don't block (blocking IO or heavy calculation)</li>
+								<li>still need to ensure other threads see changes made, if implemented as >1 OS threads</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Mitigating pre-emption is difficult!</h3>
+					<ul>
+						<li>locks</li>
+						<li>barriers</li>
+						<li>synchronized blocks</li>
+						<li>volatiles</li>
+						<li>atomicy</li>
+						<li>concurrent datastructures…</li>
+					</ul>
+					<p>-> concurrent programming is generally <br/>considered extremely difficult</p>
+				</section>
+
+				<section>
+					<h3>Cooperative multitasking offers easier path</h3>
+					<ul>
+						<li>mutations don't occur "at the same time"</li>
+						<li>w/ asynchronous IO -> no blocking</li>
+						<li>w/ only 1 OS thread -> no synchronization issues</li>
+					</ul>
+				</section>
+
+				<section>
+				</section>
+
+				<section>
+				</section>
+
+				<section>
+				</section>
+
+				<section>
+				</section>
+			</div>
+
+			<div class="footer">
+				link to this presentation: <a href="https://lahteenmaki.net/dev_*21/">https://lahteenmaki.net/dev_*21/</a>
+			</div>	
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
