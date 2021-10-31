@@ -28,6 +28,18 @@
 				font-size: 0.3em;
 			}
 			i { font-style: italic; }
+			ul.plusminus {
+				list-style: none;
+				font-size: 0.8em;
+			}
+			li.plus:before {
+				content: "👍";
+				margin-right: 4px;
+			}
+			li.minus:before {
+				content: "👎🏻";
+				margin-right: 4px;
+			}
 		</style>
 	</head>
 	<body>
@@ -52,7 +64,7 @@
 					</aside>
 				</section>
 
-				<section>
+				<section data-transition="slide-out">
 					<h3>co-routine</h3>
 					<pre>(ˈkəʊruːˌtiːn)
 n
@@ -61,11 +73,11 @@ n
 	in that it can be left and re-entered at any point
 					</pre>
 					<p style="text-align: right"><small><cite>Coroutine. (n.d.) Collins English Dictionary – Complete and Unabridged, 12th Edition 2014. (1991, 1994, 1998, 2000, 2003, 2006, 2007, 2009, 2011, 2014).
-					<br/>Retrieved October 11 2021 from <a href="https://www.thefreedictionary.com/Coroutine">https://www.thefreedictionary.com/Coroutine</a>
+					<br/>Retrieved October 11 2021 from <a href="https://www.thefreedictionary.com/Coroutine">The Free Dictionary</a>
 </cite></small></p> 
 				</section>
 
-				<section>
+				<section data-transition="slide-in">
 					<h3>co-routine</h3>
 					<pre>
 Coroutines are computer program components that generalize
@@ -76,10 +88,10 @@ such as cooperative tasks, exceptions, event loops,
 iterators, infinite lists and pipes.
 					</pre>
 					<p style="text-align: right"><small><cite>Wikipedia contributors. (2021, October 11). Coroutine. In Wikipedia, The Free Encyclopedia.
-					<br/>Retrieved 15:32, October 11, 2021, from <a href="https://en.wikipedia.org/w/index.php?title=Coroutine&oldid=1049389057">https://en.wikipedia.org/w/index.php?title=Coroutine&oldid=1049389057</a></cite></small></p>
+					<br/>Retrieved 15:32, October 11, 2021, from <a href="https://en.wikipedia.org/w/index.php?title=Coroutine&oldid=1049389057">Wikipedia</a></cite></small></p>
 				</section>
 
-				<section>
+				<section data-transition="zoom-in slide-out">
 					<h3>Some history</h3>
 					<p>Name <i>coroutine</i> was coined in<br/>around 1958-1963 by Melvin E. Conway:</p>
 					<pre>
@@ -89,10 +101,10 @@ communicates with adjacent modules as if they were input or
 output subroutines. Thus, coroutines are subroutines all at the
 same level, each acting as if it were the master program when
 in fact there is no master program.
-</pre><p style="text-align: right"><small><cite><a href="http://melconway.com/Home/pdf/compiler.pdf">http://melconway.com/Home/pdf/compiler.pdf</a></cite></small></p>
+</pre><p style="text-align: right"><small><cite><a href="http://melconway.com/Home/pdf/compiler.pdf">Melvin E. Conway: Design of a Separable Transition-Diagram Compiler</a></cite></small></p>
 				</section>
 
-				<section>
+				<section data-transition="slide-in">
 					<h3>Some history</h3>
 					<pre>
 During the 1970s, coroutines were actively researched and
@@ -100,7 +112,7 @@ experimented with, but support for them disappeared from
 later mainstream general-purpose languages for a long time.
 Rejoice now, because the Dark Ages of the coroutines
 are coming to an end.
-</pre><p style="text-align: right"><small><cite><a href="https://themonadreader.files.wordpress.com/2011/10/issue19.pdf">https://themonadreader.files.wordpress.com/2011/10/issue19.pdf</a></cite></small></p>
+</pre><p style="text-align: right"><small><cite><a href="https://themonadreader.files.wordpress.com/2011/10/issue19.pdf">The Monad Reader, issue 19</a></cite></small></p>
 				</section>
 
 				<section>
@@ -108,7 +120,7 @@ are coming to an end.
 					<p>...what?</p>
 				</section>
 
-				<section>
+				<section data-transition="zoom-in slide-out">
 					<h3>Pre-emptive?</h3>
 					<ul>
 						<li>traditional threads</li>
@@ -122,20 +134,20 @@ are coming to an end.
 					</ul>
 				</section>
 
-				<section>
+				<section data-transition="slide-in slide-out">
 					<h3>Cooperative?</h3>
 					<ul>
 						<li>green threads or fibers</li>
 						<li>thread can switch only in specified points
 							<ul>
-								<li>need to ensure threads don't block (blocking IO or heavy calculation)</li>
+								<li>need to ensure threads don't block (blocking IO or heavy processing)</li>
 								<li>still need to ensure other threads see changes made, if implemented as >1 OS threads</li>
 							</ul>
 						</li>
 					</ul>
 				</section>
 
-				<section>
+				<section data-transition="slide-in slide-out">
 					<h3>Mitigating pre-emption is difficult!</h3>
 					<ul>
 						<li>locks</li>
@@ -148,7 +160,7 @@ are coming to an end.
 					<p>-> concurrent programming is generally <br/>considered extremely difficult</p>
 				</section>
 
-				<section>
+				<section data-transition="slide-in zoom-out">
 					<h3>Cooperative multitasking offers easier path</h3>
 					<ul>
 						<li>mutations don't occur "at the same time"</li>
@@ -157,16 +169,409 @@ are coming to an end.
 					</ul>
 				</section>
 
-				<section>
+				<section data-transition="zoom-in slide-out">
+					<h3>Symmetric coroutines</h3>
+					<ul>
+						<li>control flow is passed forward to another coroutine</li>
+						<li>almost like goto</li>
+					</ul>
+				</section>
+
+				<section data-transition="slide-in zoom-out">
+					<h3>Asymmetric coroutines</h3>
+					<ul>
+						<li>control flow can be
+							<ul>
+								<li>passed to another coroutine (resume)</li>
+								<li>passed back to the invoker (yield)</li>
+							</ul>
+						</li>
+						<li>more structured -> easier to compehend</li>
+					</ul>
+				</section>
+
+				<section data-transition="zoom-in slide-out">
+					<h3>Constrained coroutines</h3>
+					<ul>
+						<li>can only be resumed/suspended in specific places the language supports</li>
+						<li>may be simpler to use</li>
+						<li>e.g. async-await</li>			
+					</ul>
+				</section>
+
+				<section data-transition="slide-in zoom-out">
+					<h3>First-class coroutines</h3>
+					<ul>
+						<li>can be freely passed around and thus invoked whenever and wherever</li>
+						<li>more powerful</li>
+					</ul>
+				</section>
+
+				<section data-transition="zoom-in slide-out">
+					<h3>Non-stackful coroutines</h3>
+					<ul>
+						<li>can only be suspended directly in coroutine body</li>
+						<li>e.g. Python generator can only yield in the body</li>
+					</ul>
+				</section>
+
+				<section data-transition="slide-in zoom-out">
+					<h3>Stackful coroutines</h3>
+					<ul>
+						<li>can be suspended wherever, also inside function calls</li>
+					</ul>
+				</section>
+
+				<section data-transition="zoom-in">
+					<h3>Generator</h3>
+					<ul>
+						<li>a limited form of coroutine</li>
+						<li>always yields to the caller</li>
+						<li>always returns a single value</li>				
+					</ul>
 				</section>
 
 				<section>
+					<h3>Continuations/CPS</h3>
+					<ul>
+						<li>programming style where "rest of the program" is passed on as an argument</li>
+						<li>requires tail-call optimization to not blow up stack</li>
+						<li>difficult to use, thus not common</li>
+						<li>can be used to implement coroutines</li>
+					</ul>
 				</section>
 
 				<section>
+					<h3>Call/cc</h3>
+					<ul>
+						<li>call with current continuation</li>
+						<li>programming style where "rest of the program" is passed kind of implicitly to a given function</li>
+						<li>originated in Scheme</li>
+						<li>extremely difficult to use, thus not common</li>
+						<li>can be used to implement coroutines as well as many other things</li>
+					</ul>
+					<aside class="notes">Please don't ask me to explain what call/cc is. Let's say I'll leave it as an exercise for the interested audience ;)</aside>
 				</section>
 
 				<section>
+					<h3>Async/await</h3>
+					<ul>
+						<li>syntax sugar to hide Promise/Future/Task/Async</li>
+						<li>really common nowadays</li>
+						<li>tends to spread asynchronity up the stack</li>
+						<li>turns code kind of upside down
+							<ul>
+								<li>normally everything is blocking except when explicitly executed asynchronously</li>
+								<li>in async/await everything is async except when explicitly awaited</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Goroutines</h3>
+					<ul>
+						<li>green threads in Go language</li>
+						<li>partly pre-emptive, multiple OS threads</li>
+						<li>have nothing to do with coroutines</li>
+						<li>runtime moves other goroutines to another OS thread on a blocking call</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Kotlin</h3>
+					<ul>
+						<li>recent, advanced, popular JVM language</li>
+						<li>language support for suspending functions
+							<ul>
+								<li>compiler transforms code into CPS behind the scenes</li>
+								<li>enables implementing coroutines as a library</li>
+								<li>no support needed from JVM</li>
+							</ul>
+						<li>optionally multiple OS threads</li>
+						<li>user can select suitable "context" for coroutine execution (e.g. Swing UI thread)</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Haskell (GHC)</h3>
+					<ul>
+						<li>built-in asynchronous IO manager</li>
+						<li>by default only runs in single OS thread
+							<ul>
+								<li>foreign calls (not IO) will block all threads</li>
+							</ul>
+						</li>
+						<li>pre-emptive multitasking, but not a problem due to lack of mutation
+							<ul>
+								<li>pre-empts on memory allocation</li>
+								<li>tight loops might block other threads</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+
+				<section data-transition="zoom-in slide-out">
+					<h3>Examples, please?</h3>
+					<p>
+						Example application: URL content processor.<br/>
+						Opinionated and imperfect, feel free to disagree!
+					</p>
+				</section>
+
+				<section data-transition="slide-in slide-out">
+					<h3>traditional blocking</h3>
+					<pre><code class="java">String content1 = fetchBlocking(url1);
+process(content1);
+String content2 = fetchBlocking(url2);
+process(content2);
+</code></pre>
+					<ul class="plusminus">
+						<li class="plus">simple, straightforward</li>
+						<li class="plus">no concurrency issues</li>
+						<li class="minus">blocking</li>
+						<li class="minus">reserves OS thread while waiting for IO</li>
+					</ul>
+				</section>
+
+				<section data-transition="slide-in slide-out">
+					<h3>manually asynchronous</h3>
+					<pre style="font-size: 0.4em"><code class="java">AtomicReference&lt;String&gt; fetchManualAsync(Url url) {
+	AtomicReference&lt;String&gt; ret;
+	ExcutorService.newSingleThreadPool().execute( () -> {
+		ret.set(fetchBlocking(url));
+	}
+	return ret;
+}
+AtomicReference&lt;String&gt; content1 = fetchManualAsync(url1);
+AtomicReference&lt;String&gt; content2 = fetchManualAsync(url2);
+while (content1.get() )) null) {};
+process(content1.get());
+while (content2.get() )) null) {};
+process(content2.get());					  
+</code></pre>
+					<ul class="plusminus">
+						<li class="plus">fetching is non-blocking...</li>
+						<li class="minus">...but reserves OS thread while waiting for IO</li>
+						<li class="minus">processing is blocking</li>
+						<li class="minus">using concurrency primitives -> complex</li>
+						<li class="minus">concurrency issues if primitives not used correctly</li>
+						<li class="minus">horrible example, please don't use!</li>
+					</ul>
+				</section>
+
+				<section data-transition="slide-in slide-out">
+					<h3>with callbacks</h3>
+					<pre><code class="java">ExecutorService pool = ExcutorService.newCachedThreadPool();
+void fetchCallback(Url url, Consumer&lt;String&gt; callback) {
+	pool.submit( () -> callback.accept(fetchBlocking(url)) );
+}
+fetchCallback(url1, content -> process(content));
+fetchCallback(url2, content -> process(content));						
+</code></pre>
+					<ul class="plusminus">
+						<li class="plus">fetching is non-blocking</li>
+						<li class="plus">processing is non-blocking</li>
+						<li class="plus">processes immediately when first fetch completes</li>
+						<li class="minus">but reserves OS thread while waiting for IO</li>
+						<li class="minus">potential concurrency issues</li>
+						<li class="minus">callback-hell</li>
+						<li class="minus">communicating between tasks is not straightforward</li>
+					</ul>
+				</section>
+
+				<section data-transition="slide-in slide-out">
+					<h3>callbacks with async IO</h3>
+					<pre><code class="java">ExecutorService pool = ExcutorService.newCachedThreadPool();
+void fetchCallbackAsyncIO(Url url, Consumer&lt;String&gt; callback) {
+	fetchUrlAsyncIO(url, content -> callback.accept(content) );
+}
+fetchCallbackAsyncIO(url1, content -> process(content));
+fetchCallbackAsyncIO(url2, content -> process(content));						
+</code></pre>
+					<ul class="plusminus">
+						<li class="plus">fetching is non-blocking</li>
+						<li class="plus">processing is non-blocking</li>
+						<li class="plus">processes immediately when first fetch completes</li>
+						<li class="minus">potential concurrency issues</li>
+						<li class="minus">callback-hell</li>
+						<li class="minus">communicating between tasks is not straightforward</li>
+					</ul>
+				</section>
+
+				<section data-transition="slide-in slide-out">
+					<h3>with Futures</h3>
+					<pre style="font-size: 0.4em"><code class="java">ExecutorService pool = ExcutorService.newCachedThreadPool();
+Future&lt;String&gt; fetchFuture(Url url) {
+	return pool.submit( () -> fetchBlocking(url));}
+}
+Future&lt;String&gt; content1 = fetchFuture(url1);
+Future&lt;String&gt; content2 = fetchFuture(url2);
+process(content1.get());
+process(content2.get());						
+</code></pre>
+					<ul class="plusminus">
+						<li class="plus">fetching is non-blocking</li>
+						<li class="plus">no concurrency issues</li>
+						<li class="minus">but reserves OS thread while waiting for IO</li>
+						<li class="minus">processing is blocking</li>
+						<li class="minus">waits for url1 before processing anything</li>
+						<li class="minus">Executors, Futures…</li>
+					</ul>
+				</section>
+
+				<section data-transition="slide-in slide-out">
+					<h3>with Futures, completions</h3>
+					<pre><code class="java">CompletionService&lt;String&gt; comp =
+	new ExecutorCompletionService(ExcutorService.newCachedThreadPool());
+comp.submit(() -> fetchBlocking(url1));
+comp.submit(() -> fetchBlocking(url2));
+process(comp.take().get());
+process(comp.take().get());						
+</code></pre>
+					<ul class="plusminus">
+						<li class="plus">fetching is non-blocking</li>
+						<li class="plus">no concurrency issues</li>
+						<li class="plus">processes immediately when first fetch completes</li>
+						<li class="plus">there are many ways to say "execute these futures in parallel", but we must say it somehow</li>
+						<li class="minus">but reserves OS thread while waiting for IO</li>
+						<li class="minus">Executors, Futures, Completions…</li>
+					</ul>
+				</section>
+
+				<section data-transition="slide-in slide-out">
+					<h3>with async-await</h3>
+					<pre style="font-size: 0.4em"><code class="java">ExecutorService pool = ExcutorService.newCachedThreadPool();
+async String fetchFuture(Url url) {
+	return pool.submit( () -> fetchBlocking(url));}
+}
+async void foo() {
+	String content1 = fetchFuture(url1);
+	String content2 = fetchFuture(url2);
+	process(await content1);
+	process(await content2);
+}						
+</code></pre>
+					<ul class="plusminus">
+						<li class="plus">fetching is non-blocking</li>
+						<li class="plus">no concurrency issues</li>
+						<li>+- hides Futures, but brings async, await…</li>
+						<li class="minus">waits for url1 before processing anything</li>
+						<li class="minus">processing is blocking</li>
+						<li class="minus">tends to "spread" async up the stack</li>
+						<li class="minus">reserves OS thread while waiting for IO</li>
+						<li class="minus">needs language support</li>
+					</ul>
+				</section>
+
+				<section data-transition="slide-in slide-out">
+					<h3>coroutines with blocking IO</h3>
+					<pre style="font-size: 0.4em"><code class="java">ExecutorService pool = ExcutorService.newCachedThreadPool();
+Coroutine&lt;String&gt; fetchCoroutine(Url url) {
+	return new Coroutine&lt;String&gt;() {
+		String run() {
+			Future&lt;String&gt; ret = pool.submit( () -> fetchBlocking(url) );
+			yield(ret.get());
+		}
+	}.start();
+}
+Coroutine&lt;String&gt; content1 = fetchCoroutine(url1);
+Coroutine&lt;String&gt; content2 = fetchCoroutine(url2);
+Coroutine.launch(() -> process(content1.resume()));
+Coroutine.launch(() -> process(content2.resume()));
+</code></pre>
+					<ul class="plusminus">
+						<li class="plus">fetching is non-blocking</li>
+						<li class="plus">processing is non-blocking if using more threads</li>
+						<li class="plus">communicating between tasks is straightforward</li>
+						<li class="minus">reserves OS thread while waiting for IO</li>
+						<li class="minus">waits for url1 before processing anything, since ret.get() blocks</li>
+						<li class="minus">potential concurrency issues if multithread, but no data races</li>
+					</ul>
+				</section>
+
+				<section data-transition="slide-in slide-out">
+					<h3>coroutines with async IO</h3>
+					<pre style="font-size: 0.4em"><code class="java">Coroutine&lt;String&gt; fetchCoroutineAsyncIO(Url url) {
+	return new Coroutine&lt;String&gt;() {
+		String run() {
+			fetchUrlAsyncIO(url, content -> Coroutine.this.yield(content));
+		}
+	}.start();
+}
+Coroutine&lt;String&gt; content1 = fetchCoroutineAsyncIO(url1);
+Coroutine&lt;String&gt; content2 = fetchCoroutineAsyncIO(url2);
+Coroutine.launch(() -> process(content1.resume()));
+Coroutine.launch(() -> process(content2.resume()));					  
+</code></pre>
+					<ul class="plusminus">
+						<li class="plus">fetching is non-blocking</li>
+						<li class="plus">processing is non-blocking if using more threads</li>
+						<li class="plus">doesn't block if compiler/runtime provides enough possibilities</li>
+						<li class="plus">communicating between tasks is straightforward</li>
+						<li class="plus">processing is non-blocking if using more threads</li>
+						<li class="minus">potential concurrency issues if multithread, but no data races</li>
+						<li class="minus">littered with "Coroutines", unless language support</li>
+						<li class="minus">coroutines introduce additional state</li>
+					</ul>
+				</section>
+
+				<section data-transition="zoom-in">
+					<h3>Example coroutine framework in Java</h3>
+					<ul>
+						<li>utilizes fork-join-pool (Java 7, 2011)</li>
+						<li>cooperative
+							<ul>
+								<li>only one coroutine allowed to execute at a time</li>
+							</ul>
+						</li>
+						<li>multithreaded
+							<ul>
+								<li>every coroutine reserves a thread, because Java
+									<ul>
+										<li>doesn't have macros</li>
+										<li>doesn't have continuations</li>
+										<li>doesn't allow moving exec to another thread</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li>block detection with <a href="https://github.com/reactor/BlockHound">BlockHound</a>
+							<ul>
+								<li>throws an error if a blocking call attempted</li>
+							</ul>
+						</li>
+						<li>link: <a href="">TODO</a></li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Conclusion</h3>
+					<ul>
+						<li>coroutines provide an easy and safe way to implement concurrency, when concurrency is needed</li>
+						<li>pure functions is still the recommended approach whenever possible</li>
+						<li>coroutines introduce state and thus complexity</li>
+						<li>needs some language support for both implementation and ease-of-use</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>links</h3>
+					<ul>
+						<li><a href="http://melconway.com/Home/pdf/compiler.pdf">Melvin E. Conway: Design of a Separable Transition-Diagram Compiler</a></li>
+						<li><a href="https://themonadreader.files.wordpress.com/2011/10/issue19.pdf">The Monad Reader, Issue 19</a></li>
+						<li><a href="https://medium.com/the-polyglot-programmer/what-are-goroutines-and-how-do-they-actually-work-f2a734f6f991">What are goroutines? And how do they actually work?</a></li>
+						<li><a href="http://www.cs.ru.nl/%7Efreek/courses/tt-2011/papers/cps/histcont.pdf">John C. Reynolds: The Discoveries of Continuations</a></li>
+						<li><a href="https://hackage.haskell.org/package/base-4.16.0.0/docs/Control-Concurrent.html">Hackage: Control.Concurrent</a></li>
+						<li><a href="https://ssw.jku.at/General/Staff/LS/coro/CoroIntroduction.pdf">Coroutines in Java</a></li>
+						<li><a href="https://kotlinlang.org/docs/coroutines-overview.html">Kotlin coroutines</a></li>
+						<li><a href="http://www.inf.puc-rio.br/~roberto/docs/MCC15-04.pdf">Revisiting Coroutines</a></li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Thank you</h2>
+					<p>Keep on exploring and learning!</p>
 				</section>
 			</div>
 
@@ -185,6 +590,8 @@ are coming to an end.
 			// - https://revealjs.com/config/
 			Reveal.initialize({
 				hash: true,
+
+  				transition: 'zoom',
 
 				// Learn about plugins: https://revealjs.com/plugins/
 				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
