@@ -69,8 +69,8 @@
 					<pre>(ˈkəʊruːˌtiːn)
 n
 	(Computer Science) computing a section of a computer
-	program similar to but differing from a subroutine
-	in that it can be left and re-entered at any point
+	program similar to but differing from a <b><i>subroutine</i></b>
+	in that it can be <b><i>left and re-entered</i></b> at any point
 					</pre>
 					<p style="text-align: right"><small><cite>Coroutine. (n.d.) Collins English Dictionary – Complete and Unabridged, 12th Edition 2014. (1991, 1994, 1998, 2000, 2003, 2006, 2007, 2009, 2011, 2014).
 					<br/>Retrieved October 11 2021 from <a href="https://www.thefreedictionary.com/Coroutine">The Free Dictionary</a>
@@ -81,8 +81,8 @@ n
 					<h3>co-routine</h3>
 					<pre>
 Coroutines are computer program components that generalize
-subroutines for non-preemptive [== Cooperative] multitasking,
-by allowing execution to be suspended and resumed. Coroutines
+subroutines for <b><i>non-preemptive [== Cooperative] multitasking</i></b>,
+by allowing execution to be <b><i>suspended</i></b> and <b><i>resumed</i></b>. Coroutines
 are well-suited for implementing familiar program components
 such as cooperative tasks, exceptions, event loops,
 iterators, infinite lists and pipes.
@@ -113,6 +113,7 @@ later mainstream general-purpose languages for a long time.
 Rejoice now, because the Dark Ages of the coroutines
 are coming to an end.
 </pre><p style="text-align: right"><small><cite><a href="https://themonadreader.files.wordpress.com/2011/10/issue19.pdf">The Monad Reader, issue 19</a></cite></small></p>
+					<aside class="notes">Monad reader @ October 26, 2011</aside>
 				</section>
 
 				<section>
@@ -121,9 +122,9 @@ are coming to an end.
 				</section>
 
 				<section data-transition="zoom-in slide-out">
-					<h3>Pre-emptive?</h3>
+					<h3>Pre-emptive</h3>
 					<ul>
-						<li>traditional threads</li>
+						<li>traditional threads (usually)</li>
 						<li>OS can switch executing threads in any point</li>
 						<li>multiple threads can mutate a datastructure "at the same time"
 						    <ul>
@@ -135,9 +136,9 @@ are coming to an end.
 				</section>
 
 				<section data-transition="slide-in slide-out">
-					<h3>Cooperative?</h3>
+					<h3>Cooperative</h3>
 					<ul>
-						<li>green threads or fibers</li>
+						<li>green threads or fibers (usually)</li>
 						<li>thread can switch only in specified points
 							<ul>
 								<li>need to ensure threads don't block (blocking IO or heavy processing)</li>
@@ -145,6 +146,7 @@ are coming to an end.
 							</ul>
 						</li>
 					</ul>
+					<aside class="notes">a bitcoin mining function would not let other threads to run</aside>
 				</section>
 
 				<section data-transition="slide-in slide-out">
@@ -164,8 +166,25 @@ are coming to an end.
 					<h3>Cooperative multitasking offers easier path</h3>
 					<ul>
 						<li>mutations don't occur "at the same time"</li>
-						<li>w/ asynchronous IO -> no blocking</li>
+						<li>w/ asynchronous IO -> ~no blocking</li>
 						<li>w/ only 1 OS thread -> no synchronization issues</li>
+					</ul>
+				</section>
+
+				<section data-transition="zoom-in slide-out">
+					<h3>Synchoronous IO</h3>
+					<ul>
+						<li>traditional IO</li>
+						<li>a.k.a. blocking IO</li>
+						<li>execution doesn't proceed until IO call returns</li>
+					</ul>
+				</section>
+
+				<section data-transition="slide-in zoom-out">
+					<h3>Asynchoronous IO</h3>
+					<ul>
+						<li>a.k.a. non-blocking IO</li>
+						<li>execution can proceed until the value is needed</li>
 					</ul>
 				</section>
 
@@ -173,7 +192,8 @@ are coming to an end.
 					<h3>Symmetric coroutines</h3>
 					<ul>
 						<li>control flow is passed forward to another coroutine</li>
-						<li>almost like goto</li>
+						<li>no "returning" or "yielding"</li>
+						<li>almost like goto 😱</li>
 					</ul>
 				</section>
 
@@ -186,7 +206,7 @@ are coming to an end.
 								<li>passed back to the invoker (yield)</li>
 							</ul>
 						</li>
-						<li>more structured -> easier to compehend</li>
+						<li>more structured -> easier to comprehend</li>
 					</ul>
 				</section>
 
@@ -212,14 +232,37 @@ are coming to an end.
 					<ul>
 						<li>can only be suspended directly in coroutine body</li>
 						<li>e.g. Python generator can only yield in the body</li>
+						<li>e.g. JavaScript can only <i>await</i> in <i>async</i> body</li>
 					</ul>
+					<pre><code class="python"># Nope:
+def myfun():
+	yield 42;
+	
+def mygen():
+	myfun()
+
+g = mygen()
+print(next(g))
+</code></pre>
 				</section>
 
 				<section data-transition="slide-in zoom-out">
 					<h3>Stackful coroutines</h3>
 					<ul>
 						<li>can be suspended wherever, also inside function calls</li>
+						<li>e.g. Lua</li>
 					</ul>
+					<pre><code class="lua">function mygen ()
+  coroutine.yield(42)
+end
+
+co = coroutine.create(function ()
+  mygen()
+end)
+
+_,b = coroutine.resume(co)
+print(b)
+</code></pre>
 				</section>
 
 				<section data-transition="zoom-in">
@@ -227,24 +270,39 @@ are coming to an end.
 					<ul>
 						<li>a limited form of coroutine</li>
 						<li>always yields to the caller</li>
-						<li>always returns a single value</li>				
+						<li>always returns a sequence one value at a time</li>
+						<li>first appeared in CLU (1975)</li>		
 					</ul>
 				</section>
 
 				<section>
 					<h3>Continuations/CPS</h3>
 					<ul>
+						<li>CPS == Continuation-Passing Style</li>
 						<li>programming style where "rest of the program" is passed on as an argument</li>
 						<li>requires tail-call optimization to not blow up stack</li>
 						<li>difficult to use, thus not common</li>
 						<li>can be used to implement coroutines</li>
 					</ul>
+					<pre><code class="go">func main() {
+  hello(func() {world(func() {})})
+}
+
+func hello(k func()) {
+  fmt.Println("hello")
+  k()
+}
+func world(k func()) {
+  fmt.Println("world")
+  k()
+}
+</code></pre>
 				</section>
 
 				<section>
 					<h3>Call/cc</h3>
 					<ul>
-						<li>call with current continuation</li>
+						<li>Call with Current Continuation</li>
 						<li>programming style where "rest of the program" is passed kind of implicitly to a given function</li>
 						<li>originated in Scheme</li>
 						<li>extremely difficult to use, thus not common</li>
@@ -273,8 +331,8 @@ are coming to an end.
 					<ul>
 						<li>green threads in Go language</li>
 						<li>partly pre-emptive, multiple OS threads</li>
-						<li>have nothing to do with coroutines</li>
 						<li>runtime moves other goroutines to another OS thread on a blocking call</li>
+						<li>have nothing to do with coroutines</li>
 					</ul>
 				</section>
 
@@ -541,7 +599,7 @@ Coroutine.launch(() -> process(content2.resume()));
 								<li>throws an error if a blocking call attempted</li>
 							</ul>
 						</li>
-						<li>link: <a href="">TODO</a></li>
+						<li>link: <a href="https://github.com/jyrimatti/naive-java-coroutines/">naive-java-coroutines @github</a></li>
 					</ul>
 				</section>
 
