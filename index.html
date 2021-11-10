@@ -393,7 +393,7 @@ process(content2);
 				</section>
 
 				<section data-transition="slide-in slide-out">
-					<h3>manually asynchronous</h3>
+					<h3>"manually asynchronous"</h3>
 					<pre style="font-size: 0.4em"><code class="java">AtomicReference&lt;String&gt; fetchManualAsync(Url url) {
 	AtomicReference&lt;String&gt; ret;
 	ExcutorService.newSingleThreadPool().execute( () -> {
@@ -403,9 +403,9 @@ process(content2);
 }
 AtomicReference&lt;String&gt; content1 = fetchManualAsync(url1);
 AtomicReference&lt;String&gt; content2 = fetchManualAsync(url2);
-while (content1.get() )) null) {};
+while (content1.get() != null) {};
 process(content1.get());
-while (content2.get() )) null) {};
+while (content2.get() != null) {};
 process(content2.get());					  
 </code></pre>
 					<ul class="plusminus">
@@ -416,6 +416,7 @@ process(content2.get());
 						<li class="minus">concurrency issues if primitives not used correctly</li>
 						<li class="minus">horrible example, please don't use!</li>
 					</ul>
+					<aside class="notes">ExecutorService is...<br/>AtomicReference is for...</aside>
 				</section>
 
 				<section data-transition="slide-in slide-out">
@@ -440,8 +441,7 @@ fetchCallback(url2, content -> process(content));
 
 				<section data-transition="slide-in slide-out">
 					<h3>callbacks with async IO</h3>
-					<pre><code class="java">ExecutorService pool = ExcutorService.newCachedThreadPool();
-void fetchCallbackAsyncIO(Url url, Consumer&lt;String&gt; callback) {
+					<pre><code class="java">void fetchCallbackAsyncIO(Url url, Consumer&lt;String&gt; callback) {
 	fetchUrlAsyncIO(url, content -> callback.accept(content) );
 }
 fetchCallbackAsyncIO(url1, content -> process(content));
@@ -495,6 +495,7 @@ process(comp.take().get());
 						<li class="minus">but reserves OS thread while waiting for IO</li>
 						<li class="minus">Executors, Futures, Completions…</li>
 					</ul>
+					<aside class="notes">I didn't bother to shorten the line...</aside>
 				</section>
 
 				<section data-transition="slide-in slide-out">
@@ -518,7 +519,7 @@ async void foo() {
 						<li class="minus">processing is blocking</li>
 						<li class="minus">tends to "spread" async up the stack</li>
 						<li class="minus">reserves OS thread while waiting for IO</li>
-						<li class="minus">needs language support</li>
+						<li class="minus">needs language support or macros</li>
 					</ul>
 				</section>
 
@@ -533,19 +534,22 @@ Coroutine&lt;String&gt; fetchCoroutine(Url url) {
 		}
 	}.start();
 }
-Coroutine&lt;String&gt; content1 = fetchCoroutine(url1);
-Coroutine&lt;String&gt; content2 = fetchCoroutine(url2);
-Coroutine.launch(() -> process(content1.resume()));
-Coroutine.launch(() -> process(content2.resume()));
+Coroutine.start(() -> {
+	Coroutine&lt;String&gt; content1 = fetchCoroutine(url1);
+	Coroutine&lt;String&gt; content2 = fetchCoroutine(url2);
+	process(content1.resume());
+	process(content2.resume());
+});
 </code></pre>
 					<ul class="plusminus">
 						<li class="plus">fetching is non-blocking</li>
 						<li class="plus">processing is non-blocking if using more threads</li>
 						<li class="plus">communicating between tasks is straightforward</li>
 						<li class="minus">reserves OS thread while waiting for IO</li>
-						<li class="minus">waits for url1 before processing anything, since ret.get() blocks</li>
+						<li class="minus">ret.get() blocks other coroutines in the same context</li>
 						<li class="minus">potential concurrency issues if multithread, but no data races</li>
 					</ul>
+					<aside class="notes">.start() is to start immediately. However the coroutine api would be structured...</aside>
 				</section>
 
 				<section data-transition="slide-in slide-out">
@@ -553,14 +557,17 @@ Coroutine.launch(() -> process(content2.resume()));
 					<pre style="font-size: 0.4em"><code class="java">Coroutine&lt;String&gt; fetchCoroutineAsyncIO(Url url) {
 	return new Coroutine&lt;String&gt;() {
 		String run() {
-			fetchUrlAsyncIO(url, content -> Coroutine.this.yield(content));
+			fetchUrlAsyncIO(url, content -> yield(content));
+			return block(); // point of no return
 		}
 	}.start();
 }
-Coroutine&lt;String&gt; content1 = fetchCoroutineAsyncIO(url1);
-Coroutine&lt;String&gt; content2 = fetchCoroutineAsyncIO(url2);
-Coroutine.launch(() -> process(content1.resume()));
-Coroutine.launch(() -> process(content2.resume()));					  
+Coroutine.start(() -> {
+	Coroutine&lt;String&gt; content1 = fetchCoroutineAsyncIO(url1);
+	Coroutine&lt;String&gt; content2 = fetchCoroutineAsyncIO(url2);
+	Coroutine.start(() -> process(content1.resume()));
+	Coroutine.start(() -> process(content2.resume()));
+});
 </code></pre>
 					<ul class="plusminus">
 						<li class="plus">fetching is non-blocking</li>
@@ -624,12 +631,14 @@ Coroutine.launch(() -> process(content2.resume()));
 						<li><a href="https://ssw.jku.at/General/Staff/LS/coro/CoroIntroduction.pdf">Coroutines in Java</a></li>
 						<li><a href="https://kotlinlang.org/docs/coroutines-overview.html">Kotlin coroutines</a></li>
 						<li><a href="http://www.inf.puc-rio.br/~roberto/docs/MCC15-04.pdf">Revisiting Coroutines</a></li>
+						<li><a href="https://github.com/reactor/BlockHound">BlockHound</a></li>
+						<li><a href="https://github.com/jyrimatti/naive-java-coroutines/">naive-java-coroutines @github</a></li>
 					</ul>
 				</section>
 
 				<section>
 					<h2>Thank you</h2>
-					<p>Keep on exploring and learning!</p>
+					<p>Keep on routinely exploring and learning!</p>
 				</section>
 			</div>
 
